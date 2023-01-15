@@ -52,8 +52,8 @@ export const NameText = styled.p`
     color: aqua;
 
 
-  //&:hover {
-  //  background: chartreuse;
-  //}
-
+    //&:hover {
+    //  background: chartreuse;
+    //}
+  }
 `
