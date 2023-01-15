@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import s from './Section.module.css';
-// import { NameText, EmailText } from '../User/User.styled';
 
 export const Section = ({ title, children }) => {
   return(
