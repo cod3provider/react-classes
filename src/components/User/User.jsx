@@ -4,13 +4,10 @@ import { EmailText, NameText, SpanText } from './User.styled';
 export const User = ({ user: { name, email } }) => {
   const isEmailBiz = email.endsWith('biz');
 
-
   return (
     <>
       <NameText>Name:
-           <SpanText>
-              {name}
-            </SpanText>
+        <SpanText>{name}</SpanText>
       </NameText>
 
       <EmailText>Email:
