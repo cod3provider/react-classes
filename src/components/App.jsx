@@ -1,18 +1,85 @@
-import { data } from '../data/users';
-import { User } from './User/User';
-import { UsersList } from './UsersList/UsersList';
-import { Section } from './Section/Section';
+import React, { Component } from 'react';
+import Button from './Button/Button';
+import fetchMovies from './services/MoviesAPI';
+import MoviesGallery from './MoviesGallery/MoviesGallery';
+import Modal from './Modal/Modal';
 
-export const App = () => {
-  return (
-    <>
-     <Section>
-       <User user={data[0]}/>
-     </Section>
+class App extends Component {
 
-      <Section title="List of users">
-        <UsersList users={data} />
-      </Section>
-    </>
-  );
-};
+  state = {
+    isMoviesShow: false,
+    page: 1,
+    movies: [],
+    isLoading: false,
+    currentImage: null,
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    const { isMoviesShow, page } = this.state;
+    if ((prevState.isMoviesShow !== isMoviesShow && isMoviesShow) || prevState.page !== page && isMoviesShow) {
+      this.getMovies();
+    }
+    if (!isMoviesShow && isMoviesShow !== prevState.isMoviesShow) {
+      this.setState({
+        movies: [],
+        page: 1,
+      });
+    }
+  }
+
+  showMoviesList = () => {
+    this.setState(prevState => ({
+      isMoviesShow: !prevState.isMoviesShow,
+    }));
+  };
+
+  getMovies = () => {
+    this.setState({ isLoading: true });
+
+    fetchMovies(this.state.page)
+    .then(({ data: { results } }) => {
+      this.setState(prevState => ({ movies: [...prevState.movies, ...results] }));
+    })
+    .catch(error => console.log(error))
+    .finally(() => this.setState({ isLoading: false }));
+  };
+
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
+  openModal = (data) => {
+    this.setState({ currentImage: data });
+  };
+
+  closeModal = () => {
+    this.setState({
+      currentImage: null,
+    });
+  };
+
+  render() {
+    const { showMoviesList, loadMore, openModal, closeModal } = this;
+    const { isMoviesShow, movies, currentImage } = this.state;
+
+    return (
+      <>
+        <Button
+          clickHandler={showMoviesList}
+          text={isMoviesShow ? 'hide movies list' : 'show movies list'}
+        />
+        {isMoviesShow &&
+          <>
+            <MoviesGallery movies={movies} showModal={openModal} />
+            <Button text='Load more' clickHandler={loadMore} />
+          </>
+        }
+        {currentImage && <Modal currentImage={currentImage} closeModal={closeModal} />}
+      </>
+    );
+  }
+}
+
+export default App;
